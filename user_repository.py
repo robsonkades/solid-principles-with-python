@@ -1,6 +1,4 @@
 import abc
-import json
-from uuid import UUID
 from user import User
 import sqlite3
 
@@ -20,7 +18,6 @@ class UserRepositoy(abc.ABC):
   @abc.abstractmethod
   def index() -> list[User]:
     pass
-
 
 class UserRepositoryInMemory(UserRepositoy):
 
@@ -45,11 +42,7 @@ class UserRepositoryInMemory(UserRepositoy):
   def index(self) -> list[User]:
       return self.users
 
-
-
 class UserRepositoryInSql(UserRepositoy):
-
-  users: list[User] = []
 
   myDatabase = "database.db"
 
@@ -59,9 +52,9 @@ class UserRepositoryInSql(UserRepositoy):
 
   def save(self, user: User) -> User:
       cursor = self.__connect.cursor()
-      query = [user.get_id(), user.get_first_name(), user.get_last_name()]
-      cursor.execute('CREATE TABLE IF NOT EXISTS users (id text, first_name text, last_name text)')
-      cursor.execute("insert into users(id, first_name, last_name) values (?, ?, ?)", query)
+      query = [user.get_id(), user.get_first_name(), user.get_last_name(), user.get_user_type()]
+      cursor.execute('CREATE TABLE IF NOT EXISTS users (id text, first_name text, last_name text, user_type text)')
+      cursor.execute("insert into users(id, first_name, last_name, user_type) values (?, ?, ?, ?)", query)
       self.__connect.commit()
       cursor.close()
       return user
@@ -69,7 +62,7 @@ class UserRepositoryInSql(UserRepositoy):
   def get(self, id: str) -> User:
     cursor = self.__connect.cursor()
     query = [id]
-    cursor.execute('CREATE TABLE IF NOT EXISTS users (id text, first_name text, last_name text)')
+    cursor.execute('CREATE TABLE IF NOT EXISTS users (id text, first_name text, last_name text, user_type text)')
     cursor.execute("select * from users where id=?", query)
     row = cursor.fetchone()
     if row == None:
@@ -78,15 +71,36 @@ class UserRepositoryInSql(UserRepositoy):
     id = row[0]
     first_name = row[1]
     last_name = row[2]
+    user_type = row[3]
 
-    user = User(first_name=first_name, last_name=last_name)
+    user = User(first_name=first_name, last_name=last_name, user_type=user_type)
     user.set_id(id)
     cursor.close()
     return user
 
-
   def delete(self, user: User) -> None:
-      self.users.remove(user)
+    cursor = self.__connect.cursor()
+    query = [user.get_id()]
+    cursor.execute('CREATE TABLE IF NOT EXISTS users (id text, first_name text, last_name text, user_type text)')
+    cursor.execute("delete from users where id=?", query)
+    cursor.close()
+    self.__connect.commit()
 
   def index(self) -> list[User]:
-      return self.users
+    cursor = self.__connect.cursor()
+    cursor.execute('CREATE TABLE IF NOT EXISTS users (id text, first_name text, last_name text, user_type text)')
+    cursor.execute("select * from users")
+    rows = cursor.fetchall()
+    users: list[User] = []
+
+    for row in rows:
+      id = row[0]
+      first_name = row[1]
+      last_name = row[2]
+      user_type = row[3]
+
+      user = User(first_name=first_name, last_name=last_name, user_type=user_type)
+      user.set_id(id)
+      users.append(user)
+    cursor.close()
+    return users

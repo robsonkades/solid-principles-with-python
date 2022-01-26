@@ -17,7 +17,6 @@ class EmailNotificationService(NotificationService):
       print(f"Enviado notificação id:{id}")
       return CreateNotificationOutput(id=id)
 
-
 class SMSNotificationService(NotificationService):
   def __init__(self) -> None:
       super().__init__()
