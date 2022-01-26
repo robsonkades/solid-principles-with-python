@@ -1,4 +1,5 @@
 from dtos import CreateUserInput, CreateUserOutput, CreateNotificationInput, UserType
+from exception import ServiceException, UserException
 from notification_service import NotificationService
 from user_repository import UserRepositoy
 from user import User
@@ -25,7 +26,7 @@ class CreateDevUserService(CreateUserService):
   def execute(self, input: CreateUserInput) -> CreateUserOutput:
     print(f'----- Criando um usuário do tipo {input.user_type.name}')
     if input.age < 16:
-      raise Exception("Usuário menor de idade não pode criar uma conta.")
+      raise UserException(message="Usuário menor de idade não pode criar uma conta.")
 
     create_user_output = super().execute(input=input)
 
@@ -52,7 +53,7 @@ class CreateTechManagerUserService(CreateUserService):
   def execute(self, input: CreateUserInput) -> CreateUserOutput:
     print(f'----- Criando um usuário do tipo {input.user_type.name}')
     if input.age <= 30:
-      raise Exception("Usuário menor de idade não pode criar uma conta.")
+      raise UserException(message="Usuário menor de idade não pode criar uma conta.")
 
     create_user_output = super().execute(input=input)
 
@@ -75,4 +76,4 @@ class CreateUserBuilderService:
       elif input.user_type == UserType.TECHMANAGER:
         return CreateTechManagerUserService
       else:
-        raise Exception("CreateUserService não encontrado para o userType")
+        raise ServiceException(message="CreateUserService não encontrado para o userType")

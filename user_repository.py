@@ -1,4 +1,5 @@
 import abc
+from exception import UserException
 from user import User
 import sqlite3
 
@@ -34,7 +35,7 @@ class UserRepositoryInMemory(UserRepositoy):
     response = [d for d in self.users if d.get_id() == id]
     if len(response) > 0:
       return response[0]
-    raise Exception("User with id {id} not found")
+    raise UserException(message="User with id {id} not found")
 
   def delete(self, user: User) -> None:
       self.users.remove(user)
@@ -66,7 +67,7 @@ class UserRepositoryInSql(UserRepositoy):
     cursor.execute("select * from users where id=?", query)
     row = cursor.fetchone()
     if row == None:
-      raise Exception("User with id {id} not found")
+      raise UserException(message="User with id {id} not found")
 
     id = row[0]
     first_name = row[1]

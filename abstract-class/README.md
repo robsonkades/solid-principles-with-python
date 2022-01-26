@@ -1,1 +1,0 @@
-# Abastract class in Python
