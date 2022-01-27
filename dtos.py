@@ -4,9 +4,10 @@ from uuid import UUID
 class UserType(Enum):
   DEV = 'Dev'
   TECHMANAGER = 'TechManager'
+  USER = 'User'
 
 class CreateUserInput:
-  def __init__(self, first_name: str, last_name: str, age: int, user_type: UserType) -> None:
+  def __init__(self, first_name: str, last_name: str, age: int, user_type: UserType = UserType.USER) -> None:
     self.first_name = first_name
     self.last_name = last_name
     self.age = age

@@ -12,9 +12,14 @@ class EmailNotificationService(NotificationService):
       super().__init__()
 
   def execute(self, payload: CreateNotificationInput) -> CreateNotificationOutput:
-      print(f"Enviando notificação de boas-vindas para email:{payload.email}")
+      print(f"-------Enviando notificação-------")
+      print(f"assunto: {payload.title}")
+      print(f"para: {payload.email}")
+      print(f"mensagem: {payload.message}")
+      print(f"----------------------------------")
       id=uuid.uuid4()
       print(f"Enviado notificação id:{id}")
+      print(f"----------------------------------")
       return CreateNotificationOutput(id=id)
 
 class SMSNotificationService(NotificationService):
@@ -22,6 +27,12 @@ class SMSNotificationService(NotificationService):
       super().__init__()
 
   def execute(self, payload: CreateNotificationInput) -> CreateNotificationOutput:
-      print(f"Enviando notificação de boas-vindas para phone:{payload.phone}")
+      print(f"-------Enviando notificação-------")
+      print(f"assunto: {payload.title}")
+      print(f"para: {payload.phone}")
+      print(f"mensagem: {payload.message}")
+      print(f"----------------------------------")
       id=uuid.uuid4()
       print(f"Enviado notificação id:{id}")
+      print(f"----------------------------------")
+      return CreateNotificationOutput(id=id)
