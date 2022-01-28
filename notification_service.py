@@ -1,8 +1,9 @@
 import abc
 import uuid
 from dtos import CreateNotificationInput, CreateNotificationOutput
+from util import Singleton
 
-class NotificationService(abc.ABC):
+class NotificationService(Singleton, abc.ABC):
   @abc.abstractmethod
   def execute(payload: CreateNotificationInput) -> CreateNotificationOutput:
     pass

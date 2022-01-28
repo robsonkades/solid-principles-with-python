@@ -3,7 +3,9 @@ from exception import UserException
 from user import User
 import sqlite3
 
-class UserRepositoy(abc.ABC):
+from util import Singleton
+
+class UserRepositoy(Singleton, abc.ABC):
   @abc.abstractmethod
   def save(user: User) -> User:
     pass

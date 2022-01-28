@@ -1,10 +1,11 @@
+import abc
 from typing import Type
 from dtos import CreateUserInput, CreateUserOutput
 from notification_service import NotificationService
 from user_repository import UserRepositoy
 from user_service import CreateDevUserService, CreateTechManagerUserService, CreateUserBuilderService, CreateUserService
 
-class UserController:
+class UserControllerImpl:
   def __init__(self, user_repository: UserRepositoy, notification: NotificationService) -> None:
       self.__user_repository = user_repository
       self.__notification = notification
