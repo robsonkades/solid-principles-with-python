@@ -243,3 +243,8 @@ user_controller = UserControllerImpl(user_repository=user_repository_impl, notif
 Veja que criamos uma classe base `UserRepositoy`e também criamos duas implementações especificadas que são `UserRepositoryInSql` e `UserRepositoryInMemory`, ambas são do tipo `UserRepositoy`.
 
 O nosso `UserControllerImpl` depende da nossa abstração e não de uma classe implementada, isso signfica que quando for instânciar o nosso `UserControllerImpl` podemos informar qual implementação queremos.
+
+## Conclusão
+
+Neste artigo, foi apresentado aos cinco princípios do SOLID, e alguns exemplos de como podemos
+implementar utilizando a linguagem python.
