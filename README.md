@@ -1,4 +1,4 @@
-# Aplicando os princípios de solid em uma aplicação real com python.
+# Utilizando os princípios de solid em uma aplicação real com python.
 
 ## Introdução
 
@@ -16,9 +16,9 @@ SOLID significa:
 
 ## Princípio da responsabilidade única
 
-Uma classe deve ter um e apenas um motivo para mudar, o que significa que uma classe deve ter apenas um objetivo.
+Uma classe deve ter um motivo para mudar, o que significa que uma classe deve ter apenas um objetivo.
 
-Alguns benefícios que esse princípio pode nos ajudar:
+Como esse princípio pode nos ajudar:
 
 - **Menor acoplamento** – Menos funcionalidades em uma única classe terá menos dependências.
 - **Organização** – Classes menores e bem organizadas são mais fáceis de dar manutenção e evoluir.
@@ -41,8 +41,8 @@ class CreateUserService:
     return CreateUserOutput(first_name=user.get_first_name(), last_name=user.get_last_name())
 ```
 
-Um exemplo bem simple, basicamente a classe `CreateUserService` tem apenas uma função que é Criar um usuário.
-Observe que essa classe esta salvando um usuário em um repositório, porém a nossa classe não sabe qual é o tipo desse repositório, pode ser um banco de dados sql, nosql ou talvez um arquivo, ou seja, não é de responsabilidade da classe conhecer como o usuário e salvo.
+Basicamente a classe `CreateUserService` tem apenas uma função que é Criar um usuário.
+Observe que essa classe esta salvando um usuário em um repositório, porém a nossa classe não sabe qual é o tipo desse repositório, pode ser um banco de dados sql, nosql ou talvez um arquivo. Não é de responsabilidade da classe conhecer como o usuário é armazenado.
 
 ## Princípio do aberto-fechado
 
@@ -92,22 +92,19 @@ class CreateDevUserService(CreateUserService):
     return create_user_output
 ```
 
-Veja que a classe `CreateUserService` é utilizada para criar um usuário, agora observe
-a classe `CreateDevUserService`, essa classe é uma classe do tipo `CreateUserService`, porém
-fizemos algumas modificações, criamos algumas regras de negócio para criar um usuário do tipo desenvolvedor, que a idade tem que ser maior que 15
-anos e também enviamos uma notificação quando o usuário for criado, veja que passamos para a nossa super classe criar o usuário `super().execute(input=input)`.
+Veja que a classe `CreateUserService` é utilizada para criar um usuário.
+A classe `CreateDevUserService` é uma classe do tipo `CreateUserService`, porém
+fizemos algumas modificações, criamos algumas regras de negócio para criar um usuário do tipo desenvolvedor, observe que estamos chamando a função execute da nossa super classe `super().execute(input=input)`.
 
-Estão conseguimos extender a criação de usuários, criamos algumas regras na nossa classe que foi extendida e não foi necessário modificar a classe pai.
+Então conseguimos extender a criação de usuários, criamos algumas regras na nossa classe que foi extendida e não foi necessário modificar a classe pai (CreateUserService).
 
 ## Princípio da substituição de Liskov
 
-Simplificando, se a classe A for um subtipo da classe B , devemos ser capazes de substituir B por A sem interromper o comportamento do nosso programa.
+Se a classe A for um subtipo da classe B, devemos ser capazes de substituir B por A sem interromper o comportamento de nossa aplicação.
 
 Simplificando, as classes derivadas devem poder ser substituíveis por suas classes base.
 
 Vamos para o exemplo:
-
-Nossa classe abstrata
 
 ```py
 class NotificationService(Singleton, abc.ABC):
@@ -115,8 +112,6 @@ class NotificationService(Singleton, abc.ABC):
   def execute(payload: CreateNotificationInput) -> CreateNotificationOutput:
     pass
 ```
-
-Classe que envia notificações por email
 
 ```py
 class EmailNotificationService(NotificationService):
@@ -126,8 +121,6 @@ class EmailNotificationService(NotificationService):
   def execute(self, payload: CreateNotificationInput) -> CreateNotificationOutput:
     ...
 ```
-
-Classe que envia notificações por Sms
 
 ```py
 class SMSNotificationService(NotificationService):
@@ -152,7 +145,7 @@ Observe que quando estamos instanciando a nossa classe `EmailNotificationService
 
 ## Princípio da segregação de interfaces
 
-Interfaces específicas são melhores que interfaces de propósito geral, ou seja, não podemos obrigar os nossos clientes a implementar interfaces com métodos que não serão utilizados.
+Interfaces específicas são melhores que interfaces de propósito geral e não podemos obrigar os nossos clientes a implementar interfaces com métodos que não serão utilizados.
 
 Ao fazer isso, podemos garantir que as classes de implementação só precisem se preocupar com os métodos que são de seu interesse.
 
@@ -169,8 +162,6 @@ class UserRepositoy(Singleton, abc.ABC):
     pass
 ```
 
-Implementação do repositório em memória
-
 ```py
 class UserRepositoryInMemory(UserRepositoy):
   users: list[User] = []
@@ -183,21 +174,19 @@ class UserRepositoryInMemory(UserRepositoy):
       return user
 ```
 
-Em nosso exemplo criamos uma classe `UserRepositoy` com duas funções `get` e `save`, agora vejamos a implementação que criamos na classe `UserRepositoryInMemory`. Observe que na nossa implementação somente criamos o a função de `save`, a função `get` por uma regra nossa não faz sentido ser implementada nesse momento.
+Em nosso exemplo criamos uma classe `UserRepositoy` com duas funções `get` e `save`, também criamos uma implementação da nossa interface chamada de `UserRepositoryInMemory`. Observe que na nossa implementação somente criamos o a função de `save`, a função `get` por uma regra nossa não faz sentido ser implementada nesse momento.
 
 Se executar o nosso código teremos um problema, por que não foi implementado a função `get`, com isso temos uma quebra do princípio, por que somos obrigados a implementar a função.
 
 E como resolvemos isso?
 
-Podemos criar interfaces especificas com a função `save` e outra com `get`, em nossa classe que implementamos somente utilizamos interfaces que fazem sentido no nosso código.
+Podemos criar interfaces especificas com a função `save` e outra com `get`. Em nossa implementação podemos utilizar destas interfaces somente quando fizer sentido utilizar as funções de `save` e `get`.
 
 ## Princípio da inversão de dependência
 
-As entidades devem depender de abstrações e não de implementações, um módulo de alto nivel não deve depender de um módulo de baixo nivel mas ambos devem depender de abstrações.
+As entidades devem depender de abstrações e não de implementações. Um módulo de alto nivel não deve depender de um módulo de baixo nivel mas ambos devem depender de abstrações.
 
 Vejamos um exemplo:
-
-Classe base do repositório
 
 ```py
 class UserRepositoy(Singleton, abc.ABC):
@@ -206,8 +195,6 @@ class UserRepositoy(Singleton, abc.ABC):
     pass
 ```
 
-Implementação do repositório em memória
-
 ```py
 class UserRepositoryInMemory(UserRepositoy):
   users: list[User] = []
@@ -219,8 +206,6 @@ class UserRepositoryInMemory(UserRepositoy):
       self.users.append(user)
       return user
 ```
-
-Implementação do repositório em banco de dados sql
 
 ```py
 class UserRepositoryInSql(UserRepositoy):
@@ -241,16 +226,12 @@ class UserRepositoryInSql(UserRepositoy):
       return user
 ```
 
-Controller de usuários
-
 ```py
 class UserControllerImpl:
   def __init__(self, user_repository: UserRepositoy, notification: NotificationService) -> None:
       self.__user_repository = user_repository
       self.__notification = notification
 ```
-
-Executando nossa aplicação
 
 ```py
 user_repository_impl: UserRepositoy = UserRepositoryInMemory()
@@ -259,6 +240,6 @@ notification_service: NotificationService = EmailNotificationService()
 user_controller = UserControllerImpl(user_repository=user_repository_impl, notification=notification_service)
 ```
 
-Veja que criamos uma classe base `UserRepositoy`e também criamos duas implementações especificadas que são `UserRepositoryInSql` e `UserRepositoryInMemory` ambas são do tipo `UserRepositoy`.
+Veja que criamos uma classe base `UserRepositoy`e também criamos duas implementações especificadas que são `UserRepositoryInSql` e `UserRepositoryInMemory`, ambas são do tipo `UserRepositoy`.
 
-O nosso `UserControllerImpl` depende da nossa abstração e não de uma classe implementada, isso signfica que quando for instâncias a nossa classe podemos passar para o nosso `UserControllerImpl` qual implementação queremos.
+O nosso `UserControllerImpl` depende da nossa abstração e não de uma classe implementada, isso signfica que quando for instânciar o nosso `UserControllerImpl` podemos informar qual implementação queremos.
